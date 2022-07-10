@@ -2,8 +2,10 @@
 
 @model GZY.Quartz.MUI.Areas.MyFeature.Pages.MainModel
 @{
+    ViewBag.Title = "Quartz UI";
     Layout = "_JavasCriptLayout";
 }
+
 <div id="main">
     <el-container>
         <el-header style="padding: 0;">
@@ -144,12 +146,14 @@
                                   v-if="ruleForm.TaskType==1">
                         <el-input v-model="ruleForm.DllClassName" placeholder="请输入DLL类型名"></el-input>
                     </el-form-item>
-                    @*<el-form-item label="Dll方法名"
+                    @*
+                    <el-form-item label="Dll方法名"
                       prop="DllActionName"
                       :rules="rules.DllActionName"
                       v-if="ruleForm.TaskType==1">
-            <el-input v-model="ruleForm.DllActionName" placeholder="请输入DLL方法名"></el-input>
-        </el-form-item>*@
+                        <el-input v-model="ruleForm.DllActionName" placeholder="请输入DLL方法名"></el-input>
+                    </el-form-item>
+                    *@
                     <el-form-item label="任务描述" prop="Describe">
                         <el-input type="textarea" :rows="5" v-model="ruleForm.Describe"></el-input>
                     </el-form-item>
@@ -192,6 +196,7 @@
         </el-row>
     </el-dialog>
 </div>
+
 @section Scripts{
     <script>
         new Vue({
@@ -260,7 +265,7 @@
                     var that = this;
                     axios("?handler=SelectJob").then(function (res) {
                         that.tableData = res.data;
-                    });
+                    }).catch(() => { });
                 },
                 handleXJRW() {
                     this.title = "新建任务";
@@ -333,7 +338,7 @@
                         if (callback) {
                             callback();
                         }
-                    });
+                    }).catch(() => { });
                 },
                 handleZTRW() {
                     if (!this.selectrow) {
@@ -445,7 +450,6 @@
                                             that.dialogFormVisible = false;
                                         }
                                     });
-
                                 } else {
                                     ELEMENT.MessageBox.alert(res.data.message, "系统信息", {
                                         type: 'info', callback: () => {
@@ -455,7 +459,7 @@
                                         }
                                     });
                                 }
-                            });
+                            }).catch(() => { });
                         }
                     });
                 },

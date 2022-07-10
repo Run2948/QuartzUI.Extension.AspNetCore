@@ -4,7 +4,6 @@ using GZY.Quartz.MUI.EFContext;
 using GZY.Quartz.MUI.Service;
 using GZY.Quartz.MUI.Tools;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
@@ -23,18 +22,21 @@ namespace GZY.Quartz.MUI.Extensions
     {
         public static IServiceCollection AddQuartzUI(this IServiceCollection services, DbContextOptions<QuarzEFContext> option = null)
         {
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(6);
+                options.Cookie.HttpOnly = true;
+            });
             services.AddRazorPages();
             services.AddHttpClient();
             services.AddHttpContextAccessor();
             if (option != null)
             {
-
                 services.AddSingleton<DbContextOptions<QuarzEFContext>>(a => { return option; });
                 services.AddDbContext<QuarzEFContext>();
                 services.AddScoped<IQuartzLogService, EFQuartzLogService>();
                 services.AddScoped<IQuartzService, EFQuartzService>();
-
-
             }
             else
             {
@@ -49,7 +51,6 @@ namespace GZY.Quartz.MUI.Extensions
             services.AddSingleton<IJobFactory, ASPDIJobFactory>();
             services.AddScoped<IQuartzHandle, QuartzHandle>();
             return services;
-
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace GZY.Quartz.MUI.Extensions
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection AddQuartzClassJobs(this IServiceCollection services)
-       {
+        {
             var baseType = typeof(IJobService);
             var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             var referencedAssemblies = Directory.GetFiles(path, "*.dll");
@@ -84,7 +85,7 @@ namespace GZY.Quartz.MUI.Extensions
             foreach (var implementType in implementTypes)
             {
                 var interfaceType = implementType.GetInterfaces().First();
-                    services.AddScoped(interfaceType, implementType);
+                services.AddScoped(interfaceType, implementType);
             }
             return services;
 
@@ -94,12 +95,13 @@ namespace GZY.Quartz.MUI.Extensions
 
         public static IApplicationBuilder UseQuartz(this IApplicationBuilder builder)
         {
+            builder.UseSession();
             builder.UseRouting();
             builder.UseStaticFiles();
             builder.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                
+
             });
             IServiceProvider services = builder.ApplicationServices;
             using (var serviceScope = services.CreateScope())
