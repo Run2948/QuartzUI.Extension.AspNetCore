@@ -1,35 +1,93 @@
-# GZY.Quartz.MUI
-基于Quartz的轻量级,注入化的UI组件
+# QuartzUI.Extension.AspNetCore
 
-|Licence| Build | NuGet | Support |
-|--|--|--|--|
-|![](https://svg.hamm.cn/badge.svg?key=Licence&value=MIT&color=e0861a)|![](https://svg.hamm.cn/badge.svg?key=.Netcore3.1&value=passing&color=45b97c)|[![](https://img.shields.io/nuget/dt/GZY.Quartz.MUI)](https://www.nuget.org/packages/GZY.Quartz.MUI)|.NetCore3.1&.Net5.0&.Net6.0
+Lightweight, injectable UI components based on Quartz.
 
 
-中文使用方法请参考:
-https://www.cnblogs.com/GuZhenYin/p/15411316.html
-简易步骤: 
-本地文件存储版本:  
-1.注入QuartzUI  
-  services.AddQuartzUI();  
-2.如需开启ClassJob则注入以下内容  
-  services.AddQuartzClassJobs();  
-  
-数据库版本 
-1.注入QuartzUI  
-var optionsBuilder = new DbContextOptionsBuilder<QuarzEFContext>();  
-optionsBuilder.UseMysql("server=xxxxxxx;database=xxx;User Id=xxxx;PWD=xxxx", b => b.MaxBatchSize(1));//创建数据库连接  
-services.AddQuartzUI(optionsBuilder.Options); //注入UI组件  
 
-2.在Startup的Configure方法中添加以下内容:  
+## 快速使用
+
+### 1. 安装
+
+* [QuartzUI.Extension.AspNetCore](https://www.nuget.org/packages/QuartzUI.Extension.AspNetCore)
+
+``` bash
+dotnet add package QuartzUI.Extension.AspNetCore
+```
+
+
+
+### 2. 注册
+
+#### 2.1 基于文件的持久化存储（默认方式）
+
+* 1.注入QuartzUI：
+
+```csharp
+services.AddQuartzUI();  
+```
+
+* 2.开启 ClassJob 支持（可选） 
+
+```csharp
+ services.AddQuartzClassJobs();  
+```
+
+* 3.使用QuartzUI
+
+```csharp
 app.UseQuartz();  
-  
-  
-运行项目即可   
-  
-    
-   
-  
-  
-注:界面参考Quartz.NetUI
+```
 
+* 4.配置管理员口令
+
+```json
+{
+  "QuartzUI": {
+    "Token": "task123456",
+    "SuperToken": "super123456"
+  }
+}
+```
+
+
+
+#### 2.2 基于数据库的持久化存储 
+
+
+* 1.注入QuartzUI：
+
+```csharp
+services.AddQuartzUI(optionsBuilder =>
+{
+     // 创建 MySQL 数据库连接
+     optionsBuilder.UseMySql(Configuration.GetConnectionString("MySql"), b => b.MaxBatchSize(1));
+});
+```
+
+* 2.开启 ClassJob 支持（可选） 
+
+```csharp
+ services.AddQuartzClassJobs();  
+```
+
+* 3.使用QuartzUI
+
+```csharp
+app.UseQuartz(); 
+```
+
+* 4.配置管理员口令
+
+```json
+{
+  "QuartzUI": {
+    "Token": "task123456",
+    "SuperToken": "super123456"
+  }
+}
+```
+
+
+### 3.案例
+
+[QuartzUIDemo](https://github.com/Run2948/QuartzUI.Extension.AspNetCore/tree/main/samples/QuartzUIDemo)

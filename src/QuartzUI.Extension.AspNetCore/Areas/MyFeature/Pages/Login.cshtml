@@ -1,0 +1,103 @@
+﻿@page "/QuartzLogin"
+@model QuartzUI.Extension.AspNetCore.Areas.MyFeature.Pages.LoginModel
+@{
+    ViewBag.Title = "Quartz UI";
+    Layout = "_JavasCriptLayout";
+}
+
+@section Styles {
+    <style>
+        #index {transform: translateY(-50%);width: 350px;position: absolute;left: 0;right: 0;top: 35%;margin: 0 auto;line-height: 70px;text-align: center; }
+        .head-badge { color: #999;text-decoration: none;}
+        .head-badge .large {font-size: 28px;font-weight: bold;}
+        .head-badge .small {margin-left: 28px;font-size:13px;}
+    </style>
+}
+
+    <div id="index">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" class="demo-ruleForm" v-on:submit.native.prevent>
+            <el-row>
+                <el-col :span="24">
+                    <el-badge value="Quartz.NET">
+                        <a href="javascript:void()" class="head-badge">
+                            <div class="title">
+                                <span class="large">Quartz UI</span>
+                                <span class="small">--后台任务调度</span>
+                            </div>
+                        </a>
+                    </el-badge>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24" prop="token">
+                    <el-input type="password" v-model="ruleForm.token" autocomplete="off" placeholder="请输入管理员口令" />
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-button type="danger" style="width: 100%" v-on:click="submitForm('ruleForm')">提交</el-button>
+                </el-col>
+            </el-row>
+        </el-form>
+    </div>
+
+    @section Scripts {
+    <script>
+        var msg = "@Html.Raw(Model.Msg)";
+        new Vue({
+            el: "#index",
+            data: {
+                ruleForm: {
+                    token: '',
+                },
+                rules: {
+                    token: [
+                        { required: true, message: '请输入管理员口令', trigger: 'blur' },
+                        { min: 6, message: '口令长度至少 6 个字符', trigger: 'blur' }
+                    ]
+                }
+            },
+            methods: {
+                submitForm(formName) {
+                    if (this.ruleForm.token == "" || this.ruleForm.token.trim() == "") {
+                        return ELEMENT.Message.error("请输入管理员口令");
+                    }
+                    if (this.ruleForm.token.trim().length < 6) {
+                        return ELEMENT.Message.error("口令长度至少 6 个字符");
+                    }
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            var that = this;
+                            axios.post("", null,
+                                {
+                                    params: that.ruleForm
+                                }
+                            ).then(function(res) {
+                                if (res.data.status) {
+                                    window.location.assign(res.data.message);
+                                } else {
+                                    ELEMENT.MessageBox.alert(res.data.message, "系统信息", {
+                                        type: 'error', callback: () => {
+                                            that.resetForm('ruleForm');
+                                        }
+                                    });
+                                }
+                            }).catch(() => { });
+                        } else {
+                            ELEMENT.Message.error("管理员口令格式不正确");
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            },
+            created() {
+                if (msg) {
+                    ELEMENT.Message.error(msg);
+                }
+            }
+        });
+    </script>
+}

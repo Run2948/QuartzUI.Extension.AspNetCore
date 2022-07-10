@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8604886A-1385-4C17-B82D-10DD9C31C9B5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{BFCDC1A4-34E0-4040-B6FE-478C8A46A2C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{2A89EA46-82CD-41B3-9A9A-B871DE14EF86}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuartzUIDemo", "samples\QuartzUIDemo\QuartzUIDemo.csproj", "{375F4DC1-699A-4700-A966-DC15FD4C89F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuartzUI.Extension.AspNetCore", "src\QuartzUI.Extension.AspNetCore\QuartzUI.Extension.AspNetCore.csproj", "{FC787437-E7B7-4357-B34A-7EAD486E250F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{375F4DC1-699A-4700-A966-DC15FD4C89F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375F4DC1-699A-4700-A966-DC15FD4C89F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375F4DC1-699A-4700-A966-DC15FD4C89F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375F4DC1-699A-4700-A966-DC15FD4C89F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC787437-E7B7-4357-B34A-7EAD486E250F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC787437-E7B7-4357-B34A-7EAD486E250F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC787437-E7B7-4357-B34A-7EAD486E250F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC787437-E7B7-4357-B34A-7EAD486E250F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{375F4DC1-699A-4700-A966-DC15FD4C89F7} = {BFCDC1A4-34E0-4040-B6FE-478C8A46A2C4}
+		{FC787437-E7B7-4357-B34A-7EAD486E250F} = {8604886A-1385-4C17-B82D-10DD9C31C9B5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = .
+		SolutionGuid = {81A46584-B11A-4D86-B23A-5AA047025933}
+	EndGlobalSection
+EndGlobal

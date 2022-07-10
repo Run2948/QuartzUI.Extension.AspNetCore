@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<Description>A Lightweight, injectable UI component based on Quartz for ASP.NET Core Web and Web API application.</Description>
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<Authors>Run2948</Authors>
+		<TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+		<PackageId>QuartzUI.Extension.AspNetCore</PackageId>
+		<PackageTags>Quartz Quartz.NET ElementUI Vue Razor QuartzUI Extension AspNetCore</PackageTags>
+		<PackageProjectUrl>https://github.com/Run2948/QuartzUI.Extension.AspNetCore</PackageProjectUrl>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/Run2948/QuartzUI.Extension.AspNetCore</RepositoryUrl>
+		<GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
+		<Copyright>Copyright © Run2948</Copyright>
+		<NeutralLanguage>zh-Hans</NeutralLanguage>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Version>1.1.6</Version>
+		<PackageLicenseExpression></PackageLicenseExpression>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReleaseNotes>Add login authorization access</PackageReleaseNotes>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\icon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Quartz" Version="3.3.3" />
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1' OR '$(TargetFramework)' == 'netcoreapp2.2' OR '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net5.0' OR '$(TargetFramework)' == 'net6.0'">
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
+</Project>

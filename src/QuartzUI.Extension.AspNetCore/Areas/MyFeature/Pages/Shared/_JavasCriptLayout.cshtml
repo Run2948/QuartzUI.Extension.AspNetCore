@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/_content/QuartzUI.Extension.AspNetCore/element-ui/index.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="~/_content/QuartzUI.Extension.AspNetCore/favicon.ico" type="image/x-icon">
+    @RenderSection("Styles", required: false)
+</head>
+<body style="margin: 0;padding 0;">
+    @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+    @functions {
+        public string GetAntiXsrfRequestToken()
+        {
+            return Xsrf.GetAndStoreTokens(Model.HttpContext).RequestToken;
+        }
+        public string GetGetAntiXsrfRequestTokenName()
+        {
+            return Xsrf.GetAndStoreTokens(Model.HttpContext).HeaderName;
+        }
+    }
+    <div>
+        @Html.AntiForgeryToken()
+        @RenderBody()
+    </div>
+    <script src="~/_content/QuartzUI.Extension.AspNetCore/vue/vue.js?v=2.0"></script>
+    <script src="~/_content/QuartzUI.Extension.AspNetCore/vue/axios.min.js"></script>
+    <script src="~/_content/QuartzUI.Extension.AspNetCore/element-ui/index.js"></script>
+    <script>
+        var axiosrequerst = [];
+        var loads = null;
+        function showLoad() {
+            loads = ELEMENT.Loading.service({
+                lock: true,
+                text: '努力加载中...',
+            });
+            //iview.Spin.show({
+            //    render: function (h) {
+            //        return h('div', [
+            //            h('Icon', {
+            //                'class': 'demo-spin-icon-load',
+            //                props: {
+            //                    type: 'ios-loading',
+            //                    size: 20
+            //                }
+            //            }),
+            //            h('div', '数据加载中,请稍后...')
+            //        ])
+            //    }
+            //});
+        }
+        function hideLoad(requsturl) {
+            var data = axiosrequerst.valueOf(requsturl)
+            if (data != -1) {
+                axiosrequerst.splice(data, 1);
+            }
+            if (axiosrequerst.length < 1) {
+                loads.close();
+            }
+        }
+        //注册访问前拦截
+        axios.interceptors.request.use(
+            function(config) {
+                config.headers.@GetGetAntiXsrfRequestTokenName() = "@GetAntiXsrfRequestToken()";//document.getElementsByName("__RequestVerificationToken")[0].value;
+                showLoad();
+                axiosrequerst.push(config.url);
+                //alert(config.url)
+                return config;
+            },
+            function(error) {
+                hideLoad(error.response.config.url);
+                return error;
+            }
+        );
+        axios.interceptors.response.use(
+            function(response) {
+                hideLoad(response.config.url);
+                return response;
+            },
+            function(error) {
+                hideLoad(error.response.config.url);
+                return error;
+            }
+        );
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
