@@ -47,7 +47,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
             {
                 IScheduler _scheduler = await _schedulerFactory.GetScheduler();
                 var groups = await _scheduler.GetJobGroupNames();
-                list = _quartzService.GetJobs(a=>1==1).Result;
+                list = _quartzService.GetJobs(a => 1 == 1).Result;
                 foreach (var groupName in groups)
                 {
                     foreach (var jobKey in await _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)))
@@ -102,9 +102,9 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                 return new ResultQuartzData { status = false, message = $"请确认表达式{cronExpression}是否正确!" };
             }
         }
+
         public async void InitJobs()
         {
-
             var jobs = await _quartzService.GetJobs(a => 1 == 1);
             IScheduler scheduler = await _schedulerFactory.GetScheduler();
             foreach (var item in jobs)
@@ -131,18 +131,18 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                        .WithCronSchedule(item.Interval)
                        .Build();
 
-                  
+
 
                     if (_jobFactory != null)
                     {
                         scheduler.JobFactory = _jobFactory;
                     }
-                    
-                    
+
+
                     if (item.Status == (int)JobState.开启)
                     {
                         await scheduler.ScheduleJob(job, trigger);
-                        await _quartzLogService.AddLog(new tab_quarz_tasklog() { TaskName = item.TaskName, GroupName = item.GroupName,BeginDate=DateTime.Now, Msg = $"任务初始化启动成功:{item.Status}" });
+                        await _quartzLogService.AddLog(new tab_quarz_tasklog() { TaskName = item.TaskName, GroupName = item.GroupName, BeginDate = DateTime.Now, Msg = $"任务初始化启动成功:{item.Status}" });
                     }
                     else
                     {
@@ -308,7 +308,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         public async Task<ResultQuartzData> Update(tab_quarz_task taskOptions)
         {
             var isjob = await IsQuartzJob(taskOptions.TaskName, taskOptions.GroupName);
-            var taskmodle = (await _quartzService.GetJobs(a =>a.id == taskOptions.id)).FirstOrDefault();
+            var taskmodle = (await _quartzService.GetJobs(a => a.id == taskOptions.id)).FirstOrDefault();
             var message = "";
             if (isjob.status) //如果Quartz存在就更新
             {
@@ -393,10 +393,10 @@ namespace QuartzUI.Extension.AspNetCore.Tools
             {
                 var isjob = await IsQuartzJob(taskOptions.TaskName, taskOptions.GroupName);
                 var taskmodle = (await _quartzService.GetJobs(a => a.TaskName == taskOptions.TaskName && a.GroupName == taskOptions.GroupName)).FirstOrDefault();
-              
+
                 if (isjob.status)
                 {
-                    
+
                     IScheduler scheduler = await _schedulerFactory.GetScheduler();
                     List<JobKey> jobKeys = scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(taskOptions.GroupName)).Result.ToList();
                     JobKey jobKey = jobKeys.Where(s => scheduler.GetTriggersOfJob(s).Result.Any(x => (x as CronTriggerImpl).Name == taskOptions.TaskName)).FirstOrDefault();
@@ -412,7 +412,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                     isjob.status = date.status;
                     isjob.message += date.message;
                 }
-               
+
                 return isjob;
             }
             catch (Exception ex)
@@ -508,7 +508,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                 {
                     return isjob;
                 }
-                
+
             }
             catch (Exception ex)
             {

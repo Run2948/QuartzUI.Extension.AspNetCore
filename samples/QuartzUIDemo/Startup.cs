@@ -28,13 +28,13 @@ namespace QuartzUIDemo
         public void ConfigureServices(IServiceCollection services)
         {
             // 使用本地 JSON 文件
-            //services.AddQuartzUI();
+            services.AddQuartzUI();
 
             // 创建 MySQL 数据库连接
-            services.AddQuartzUI(optionsBuilder =>
-            {
-                optionsBuilder.UseMySql(Configuration.GetConnectionString("MySql"), b => b.MaxBatchSize(1));
-            });
+            //services.AddQuartzUI(optionsBuilder =>
+            //{
+            //    optionsBuilder.UseMySql(Configuration.GetConnectionString("MySql"), b => b.MaxBatchSize(1));
+            //});
 
             services.AddQuartzClassJobs();
 

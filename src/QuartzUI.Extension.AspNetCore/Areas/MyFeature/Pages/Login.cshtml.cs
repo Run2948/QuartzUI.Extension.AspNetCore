@@ -33,6 +33,7 @@ namespace QuartzUI.Extension.AspNetCore.Areas.MyFeature.Pages
             var loginToken = HttpContext.Session.GetString("QuartzUIToken");
             if (!string.IsNullOrEmpty(loginToken))
                 return Redirect("/QuartzUI");
+
             return Page();
         }
 

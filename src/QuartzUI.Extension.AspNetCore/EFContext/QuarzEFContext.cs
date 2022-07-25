@@ -14,8 +14,8 @@ namespace QuartzUI.Extension.AspNetCore.EFContext
 {
     public class QuarzEFContext : DbContext
     {
-        public QuarzEFContext(DbContextOptions<QuarzEFContext> option)
-          : base(option)
+        public QuarzEFContext(DbContextOptions<QuarzEFContext> options)
+          : base(options)
         {
             var databaseCreator = this.GetService<IRelationalDatabaseCreator>();
             databaseCreator.EnsureCreated();

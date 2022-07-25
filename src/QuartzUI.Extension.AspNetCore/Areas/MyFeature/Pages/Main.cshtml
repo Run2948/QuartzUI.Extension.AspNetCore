@@ -8,13 +8,50 @@
 
 @section Styles {
     <style>
-        .head .logo { float:left;padding: 10px; }
-        .head .title { margin-left: -25px;float:left;padding: 18px 23px;color: #c9c9c9;font-weight: bolder;}
-        .head .menu { float: right;}
-        .head .menu li { height: 100%; list-style: none; float: left; padding: 18px 10px; position: relative; cursor: pointer; z-index: 3;}
-        .head .menu ul { height: 100%; display: inline-block; margin: 0;}
-        .head .menu a { color: #b0b0b0; font-size: 15px; text-decoration: none; padding: 10px 30px;}
-        .head .menu .actived { border-bottom: 2px solid; color: white;}
+        .head .logo {
+            float: left;
+            padding: 10px;
+        }
+
+        .head .title {
+            margin-left: -25px;
+            float: left;
+            padding: 18px 23px;
+            color: #c9c9c9;
+            font-weight: bolder;
+        }
+
+        .head .menu {
+            float: right;
+        }
+
+            .head .menu li {
+                height: 100%;
+                list-style: none;
+                float: left;
+                padding: 18px 10px;
+                position: relative;
+                cursor: pointer;
+                z-index: 3;
+            }
+
+            .head .menu ul {
+                height: 100%;
+                display: inline-block;
+                margin: 0;
+            }
+
+            .head .menu a {
+                color: #b0b0b0;
+                font-size: 15px;
+                text-decoration: none;
+                padding: 10px 30px;
+            }
+
+            .head .menu .actived {
+                border-bottom: 2px solid;
+                color: white;
+            }
     </style>
 }
 
@@ -188,6 +225,19 @@
             </el-row>
         </el-dialog>
         <el-dialog title="执行记录" :visible.sync="dialogRecordVisible">
+            <el-row align="middle">
+                <el-form :model="recordForm" :rules="recordRules" ref="recordForm">
+                    <el-form-item label="筛选记录" @*prop="date"*@ required>
+                        <el-col :span="16">
+                            <el-date-picker size="mini" v-model="recordForm.date" type="daterange" :picker-options="pickerOptions" range-separator="~" start-placeholder="开始日期" end-placeholder="结束日期" align="right">
+                        </el-col>
+                        <el-col :span="4">
+                            <el-button type="primary" size="mini" icon="el-icon-search" @@click="handleSXLS"></el-button>
+                            <el-button type="danger" size="mini" icon="el-icon-delete" @@click="handleQCLS"></el-button>
+                        </el-col>
+                    </el-form-item>
+                </el-form>
+            </el-row>
             <el-row type="flex" align="middle">
                 <el-col :span="24" style="padding: 10px 0 0 0;">
                     <el-table ref="tb_record" :data="recordData" border stripe style="width: 100%;" highlight-current-row
@@ -270,12 +320,122 @@
                     },
                     currentPage: 1,
                     total: 0,
-                    pageSize: 20,
-                    pageSizes: [20, 30, 40, 50],
+                    pageSize: 10,
+                    pageSizes: [10, 20, 30, 40, 50],
                     selectrow: "",
                     title: '新建任务',
                     isedit: false,
                     btnText: '立即创建',
+                    pickerOptions: {
+                        shortcuts: [{
+                            text: '上周',
+                            onClick(picker) {
+                                //const end = new Date();
+                                //const start = new Date();
+                                //start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                                var now = new Date(); //当前日期
+                                var nowDayOfWeek = now.getDay() - 1; //今天本周的第几天
+                                var nowDay = now.getDate(); //当前日
+                                var nowMonth = now.getMonth(); //当前月
+                                var nowYear = now.getYear(); //当前年
+                                nowYear += (nowYear < 2000) ? 1900 : 0; //
+
+                                var start = new Date(nowYear, nowMonth, nowDay - nowDayOfWeek - 7);
+                                var end = new Date(nowYear, nowMonth, nowDay - nowDayOfWeek - 1);
+
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '上个月',
+                            onClick(picker) {
+                                //const end = new Date();
+                                //const start = new Date();
+                                //start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                var now = new Date(); //当前日期
+                                var nowDayOfWeek = now.getDay() - 1; //今天本周的第几天
+                                var nowDay = now.getDate(); //当前日
+                                var nowMonth = now.getMonth(); //当前月
+                                var nowYear = now.getYear(); //当前年
+                                nowYear += (nowYear < 2000) ? 1900 : 0; //
+                                var lastMonthDate = new Date(); //上月日期
+                                lastMonthDate.setDate(1);
+                                lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+                                var lastYear = lastMonthDate.getYear();
+                                var lastMonth = lastMonthDate.getMonth();
+
+                                var monthStartDate = new Date(nowYear, lastMonth, 1);
+                                var monthEndDate = new Date(nowYear, lastMonth + 1, 1);
+                                var days = (monthEndDate - monthStartDate) / (1000 * 60 * 60 * 24);
+
+                                var start = new Date(lastMonth == 11 ? nowYear - 1 : nowYear, lastMonth, 1);
+                                var end = new Date(lastMonth == 11 ? nowYear - 1 : nowYear, lastMonth, days);
+
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '上季度',
+                            onClick(picker) {
+                                //const end = new Date();
+                                //const start = new Date();
+                                //start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                var now = new Date(); //当前日期
+                                var nowDayOfWeek = now.getDay() - 1; //今天本周的第几天
+                                var nowDay = now.getDate(); //当前日
+                                var nowMonth = now.getMonth(); //当前月
+                                var nowYear = now.getYear(); //当前年
+                                nowYear += (nowYear < 2000) ? 1900 : 0; //
+                                var lastMonthDate = new Date(); //上月日期
+                                lastMonthDate.setDate(1);
+                                lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+                                var lastYear = lastMonthDate.getYear();
+                                var lastMonth = lastMonthDate.getMonth();
+
+                                var monthStartDate = new Date(nowYear, lastMonth, 1);
+                                var monthEndDate = new Date(nowYear, lastMonth + 1, 1);
+                                var days = (monthEndDate - monthStartDate) / (1000 * 60 * 60 * 24);
+
+                                var start = new Date(lastMonth == 11 ? nowYear - 1 : nowYear, lastMonth - 2, 1);
+                                var end = new Date(lastMonth == 11 ? nowYear - 1 : nowYear, lastMonth, days);
+
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }, {
+                            text: '上一年',
+                            onClick(picker) {
+                                //const end = new Date();
+                                //const start = new Date();
+                                //start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                                var now = new Date(); //当前日期
+                                var nowDayOfWeek = now.getDay() - 1; //今天本周的第几天
+                                var nowDay = now.getDate(); //当前日
+                                var nowMonth = now.getMonth(); //当前月
+                                var nowYear = now.getYear(); //当前年
+                                nowYear += (nowYear < 2000) ? 1900 : 0; //
+                                var lastMonthDate = new Date(); //上月日期
+                                lastMonthDate.setDate(1);
+                                lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+                                var lastYear = lastMonthDate.getYear();
+                                var lastMonth = lastMonthDate.getMonth();
+
+                                var monthStartDate = new Date(nowYear, lastMonth, 1);
+                                var monthEndDate = new Date(nowYear, lastMonth + 1, 1);
+                                var days = (monthEndDate - monthStartDate) / (1000 * 60 * 60 * 24);
+
+                                var start = new Date((lastMonth == 11 ? nowYear - 1 : nowYear) - 1, lastMonth, 1);
+                                var end = new Date((lastMonth == 11 ? nowYear - 1 : nowYear) - 1, lastMonth, days);
+
+                                picker.$emit('pick', [start, end]);
+                            }
+                        }]
+                    },
+                    recordForm: {
+                        date: []
+                    },
+                    recordRules: {
+                        //date: [
+                        //    { required: false, message: '请选择日期范围', trigger: 'blur' }
+                        //]
+                    },
                     recordData: []
                 }
             },
@@ -308,7 +468,6 @@
                                 params: that.selectrow
                             }).then(function(res) {
                                 if (res.data.status) {
-
                                     that.OnLoadJobs();
                                 }
                                 ELEMENT.MessageBox.alert(res.data.message, "系统提示");
@@ -340,15 +499,22 @@
                 },
                 handleCZ(index, row) {
                     this.currentPage = 1;
-                    this.pageSize = 20;
+                    this.pageSize = 10;
                     this.selectrow = row;
                     this.getRecord(() => {
                         this.dialogRecordVisible = true;
                     });
                 },
                 getRecord(callback) {
+                    var startDate = null, endDate = null;
+                    if (this.recordForm.date != null && this.recordForm.date.length > 1) {
+                        startDate = this.recordForm.date[0];
+                        endDate = this.recordForm.date[1];
+                    }
                     axios.post("?handler=JobRecord", null, {
                         params: {
+                            startDate: startDate,
+                            endDate: endDate,
                             taskName: this.selectrow.TaskName,
                             groupName: this.selectrow.GroupName,
                             current: this.currentPage,
@@ -357,6 +523,29 @@
                     }).then(res => {
                         this.total = res.data.total;
                         this.recordData = res.data.data;
+                        if (callback) {
+                            callback();
+                        }
+                    }).catch(() => { });
+                },
+                removeRecord(callback) {
+                    var startDate = null, endDate = null;
+                    if (this.recordForm.date != null && this.recordForm.date.length > 1) {
+                        startDate = this.recordForm.date[0];
+                        endDate = this.recordForm.date[1];
+                    }
+                    axios.post("?handler=DeleteJobRecord", null, {
+                        params: {
+                            startDate: startDate,
+                            endDate: endDate,
+                            taskName: this.selectrow.TaskName,
+                            groupName: this.selectrow.GroupName
+                        }
+                    }).then(res => {
+                        if (res.data.status) {
+                            this.getRecord();
+                        }
+                        ELEMENT.MessageBox.alert(res.data.message, "系统提示");
                         if (callback) {
                             callback();
                         }
@@ -380,7 +569,6 @@
                                 params: this.selectrow
                             }).then(res => {
                                 if (res.data.status) {
-
                                     this.OnLoadJobs();
                                 }
                                 ELEMENT.MessageBox.alert(res.data.message, "系统提示");
@@ -449,6 +637,41 @@
                     this.dialogFormVisible = true;
                     this.ruleForm = Object.assign({}, this.selectrow);
                 },
+                handleSXLS() {
+                    this.$refs["recordForm"].validate((valid) => {
+                        if (valid) {
+                            this.getRecord();
+                        } else {
+                            this.$message({
+                                message: '请选择筛选时间段',
+                                type: 'warning'
+                            });
+                            return false;
+                        }
+                    });
+                },
+                handleQCLS() {
+                    this.$refs["recordForm"].validate((valid) => {
+                        if (valid) {
+                            //alert('submit!');
+                            var confirm = this.recordForm.date != null && this.recordForm.date.length > 1 ? "确定删除当前任务筛选出的所有记录吗？" : "确定删除当前任务所有历史记录吗？";
+                            ELEMENT.MessageBox.confirm(confirm, '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+                                this.removeRecord();
+                            }).catch(() => { });
+                        } else {
+                            //console.log('error submit!!');
+                            this.$message({
+                                message: '请选择删除时间段',
+                                type: 'warning'
+                            });
+                            return false;
+                        }
+                    });
+                },
                 submitForm(name) {
                     var that = this;
                     this.$refs[name].validate((valid) => {
@@ -508,7 +731,7 @@
                         id: 0,
                         timeflag: ''
                     }
-                }
+                },
             },
             filters: {
                 formatStatues(val) {

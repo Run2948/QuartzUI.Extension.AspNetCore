@@ -102,7 +102,6 @@ namespace QuartzUI.Extension.AspNetCore.Extensions
             IServiceProvider services = builder.ApplicationServices;
             using (var serviceScope = services.CreateScope())
             {
-
                 var dd = serviceScope.ServiceProvider.GetService<IQuartzHandle>();
                 dd.InitJobs();
             }

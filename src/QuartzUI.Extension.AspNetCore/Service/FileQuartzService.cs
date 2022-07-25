@@ -48,10 +48,8 @@ namespace QuartzUI.Extension.AspNetCore.Service
         {
             return Task.Run(() =>
             {
-
                 var list = _quartzFileHelper.GetJobs(where);
                 return list;
-
             });
         }
 

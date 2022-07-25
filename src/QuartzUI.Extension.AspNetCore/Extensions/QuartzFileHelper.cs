@@ -16,16 +16,15 @@ namespace QuartzUI.Extension.AspNetCore.Tools
 {
     public class QuartzFileHelper
     {
+        private string _rootPath { get; set; }
 
-        private  string _rootPath { get; set; }
+        private string _logPath { get; set; }
 
-        private  string _logPath { get; set; }
+        public string QuartzSettingsFolder { get; set; } = "QuartzSettings";
 
-        public  string QuartzSettingsFolder { get; set; } = "QuartzSettings";
+        public string Logs { get; set; } = "logs";
 
-        public   string Logs { get; set; }="logs";
-
-        public  string TaskJobFileName { get; set; }  = "task_job.json";
+        public string TaskJobFileName { get; set; } = "task_job.json";
         private IWebHostEnvironment _env;
         private IConfiguration _configuration;
 
@@ -40,7 +39,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         /// 创建作业所在根目录及日志文件夹 
         /// </summary>
         /// <returns></returns>
-        public  string CreateQuartzRootPath()
+        public string CreateQuartzRootPath()
         {
             if (!string.IsNullOrEmpty(_rootPath))
                 return _rootPath;
@@ -90,7 +89,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public  List<tab_quarz_tasklog> GetJobRunLog( string taskName, string groupName, int page, int pageSize = 100)
+        public List<tab_quarz_tasklog> GetJobRunLog(string taskName, string groupName, int page, int pageSize = 100)
         {
             string path = $"{_logPath}{groupName}\\{taskName}";
             List<tab_quarz_tasklog> list = new List<tab_quarz_tasklog>();
@@ -118,15 +117,14 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         /// 写入任务(全量)
         /// </summary>
         /// <param name="taskList"></param>
-        public  void WriteJobConfig(List<tab_quarz_task> taskList)
+        public void WriteJobConfig(List<tab_quarz_task> taskList)
         {
-            
             string jobs = JsonConvert.SerializeObject(taskList);
             //写入配置文件
             WriteFile(_rootPath, TaskJobFileName, jobs);
         }
 
-        public  void WriteStartLog(string content)
+        public void WriteStartLog(string content)
         {
             content = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "," + content;
             if (!content.EndsWith("\r\n"))
@@ -136,38 +134,51 @@ namespace QuartzUI.Extension.AspNetCore.Tools
             WriteFile(LogPath, "start.txt", content, true);
         }
 
-
-        public  void WriteJobLogs(tab_quarz_tasklog tab_Quarz_Tasklog)
+        public void WriteJobLogs(tab_quarz_tasklog tab_Quarz_Tasklog)
         {
-            var content = JsonConvert.SerializeObject(tab_Quarz_Tasklog)+"\r\n";
+            var content = JsonConvert.SerializeObject(tab_Quarz_Tasklog) + "\r\n";
             WriteFile(LogPath, "logs.txt", content, true);
         }
 
+        public void WriteJobsLog(List<tab_quarz_tasklog> tab_Quarz_Tasklogs, bool appendToLast = true)
+        {
+            var lines = tab_Quarz_Tasklogs.Select(x => JsonConvert.SerializeObject(x));
+            var content = string.Join("\r\n", lines) + "\r\n";
+            WriteFile(LogPath, "logs.txt", content, appendToLast);
+        }
 
-        public  List<tab_quarz_tasklog> GetJobsLog(int pageSize = 1)
+        public List<tab_quarz_tasklog> GetJobsLog()
         {
             string path = LogPath + "logs.txt";
             path = path.ReplacePath();
             if (!File.Exists(path))
                 return null;
 
-            var listlogs = ReadPageLine(path, pageSize, 5000, true).ToList();
-            List<tab_quarz_tasklog> listtasklogs = new List<tab_quarz_tasklog>();
-            foreach (var item in listlogs)
-            {
-                listtasklogs.Add(JsonConvert.DeserializeObject<tab_quarz_tasklog>(item));
-            }
+            var listlogs = ReadAllLines(path).ToList();
+            List<tab_quarz_tasklog> listtasklogs = listlogs.Select(x => JsonConvert.DeserializeObject<tab_quarz_tasklog>(x)).ToList();
             return listtasklogs;
         }
-        public  string RootPath
+
+        public int DeleteJobsLog(Expression<Func<tab_quarz_tasklog, bool>> where)
+        {
+            var logs = GetJobsLog();
+            var removeLogs = logs.Where(where.Compile()).ToList();
+            int count = logs.RemoveAll(l => removeLogs.Contains(l));
+
+            WriteJobsLog(logs, false);
+            return count;
+        }
+
+        public string RootPath
         {
             get { return _rootPath; }
         }
 
-        public  string LogPath
+        public string LogPath
         {
             get { return _logPath; }
         }
+
         /// <summary>
         /// 读取本地txt日志内容
         /// </summary>
@@ -176,7 +187,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         /// <param name="pageSize"></param>
         /// <param name="seekEnd"></param>
         /// <returns></returns>
-        public  IEnumerable<string> ReadPageLine(string fullPath, int page, int pageSize, bool seekEnd = false)
+        public IEnumerable<string> ReadPageLine(string fullPath, int page, int pageSize, bool seekEnd = false)
         {
             if (page <= 0)
             {
@@ -227,7 +238,14 @@ namespace QuartzUI.Extension.AspNetCore.Tools
             enumerator.Dispose();
         }
 
-        public  string ReadFile(string path)
+        public IEnumerable<string> ReadAllLines(string fullPath)
+        {
+            fullPath = fullPath.ReplacePath();
+            var lines = File.ReadLines(fullPath, Encoding.UTF8);
+            return lines;
+        }
+
+        public string ReadFile(string path)
         {
             path = path.ReplacePath();
             if (!File.Exists(path))
@@ -243,7 +261,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         /// </summary>
         /// <param name="Path">文件路径</param>
         /// <param name="Strings">文件内容</param>
-        public  void WriteFile(string path, string fileName, string content, bool appendToLast = false)
+        public void WriteFile(string path, string fileName, string content, bool appendToLast = false)
         {
             if (!path.EndsWith("\\"))
             {

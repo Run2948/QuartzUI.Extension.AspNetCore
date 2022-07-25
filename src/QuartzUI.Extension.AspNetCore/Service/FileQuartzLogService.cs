@@ -16,6 +16,7 @@ namespace QuartzUI.Extension.AspNetCore.Service
         {
             _quartzFileHelper = quartzFileHelper;
         }
+
         public Task<ResultQuartzData> AddLog(tab_quarz_tasklog tab_Quarz_Tasklog)
         {
             return Task.Run(() =>
@@ -27,36 +28,47 @@ namespace QuartzUI.Extension.AspNetCore.Service
                 }
                 catch (Exception)
                 {
-
                     return new ResultQuartzData { message = "日志数据保存失败!", status = false };
                 }
             });
+        }
+
+        public Task<ResultQuartzData> DeleteLogs(DateTime? startDate, DateTime? endDate, string taskName, string groupName)
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    var count = _quartzFileHelper.DeleteJobsLog(a => a.TaskName == taskName && a.GroupName == groupName && (startDate == null || a.BeginDate >= startDate) && (endDate == null || a.BeginDate <= endDate));
+                    return new ResultQuartzData { message = $"{count} 条日志数据删除成功!", status = true };
+                }
+                catch (Exception)
+                {
+                    return new ResultQuartzData { message = "日志数据删除失败!", status = false };
+                }
+            });
+            
         }
 
         public Task<tab_quarz_tasklog> Getlastlog(string taskName, string groupName)
         {
             return Task.Run(() =>
             {
-
                 var list = _quartzFileHelper.GetJobsLog();
-                var date = list.Where(a => a.TaskName == taskName && a.GroupName == groupName).OrderByDescending(a=>a.BeginDate).FirstOrDefault();
+                var date = list.Where(a => a.TaskName == taskName && a.GroupName == groupName).OrderByDescending(a => a.BeginDate).FirstOrDefault();
                 return date;
-
             });
         }
 
-        public Task<ResultData<tab_quarz_tasklog>> GetLogs(string taskName, string groupName, int page, int pageSize = 100)
+        public Task<ResultData<tab_quarz_tasklog>> GetLogs(DateTime? startDate, DateTime? endDate, string taskName, string groupName, int page, int pageSize = 10)
         {
             return Task.Run(() =>
             {
-
                 var list = _quartzFileHelper.GetJobsLog();
-                int total = list.Where(a => a.TaskName == taskName
-            && a.GroupName == groupName).Count();
-                var date = list.Where(a => a.TaskName == taskName && a.GroupName == groupName).Skip((page - 1) * pageSize).Take(pageSize).ToList();
-                ResultData<tab_quarz_tasklog> resultData = new ResultData<tab_quarz_tasklog>() { total = total, data = date };
+                int total = list.Where(a => a.TaskName == taskName && a.GroupName == groupName && (startDate == null || a.BeginDate >= startDate) && (endDate == null || a.BeginDate <= endDate)).Count();
+                var data = list.Where(a => a.TaskName == taskName && a.GroupName == groupName && (startDate == null || a.BeginDate >= startDate) && (endDate == null || a.BeginDate <= endDate)).OrderByDescending(a => a.BeginDate).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                ResultData<tab_quarz_tasklog> resultData = new ResultData<tab_quarz_tasklog>() { total = total, data = data };
                 return resultData;
-
             });
         }
     }

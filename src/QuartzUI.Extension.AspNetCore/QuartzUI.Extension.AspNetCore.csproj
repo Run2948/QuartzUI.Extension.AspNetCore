@@ -17,10 +17,10 @@
 		<NeutralLanguage>zh-Hans</NeutralLanguage>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<Version>1.1.6</Version>
+		<Version>1.1.7</Version>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<PackageReleaseNotes>Add login authorization access</PackageReleaseNotes>
+		<PackageReleaseNotes>Add debug environment; Filter or delete task logs based on date range.</PackageReleaseNotes>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 

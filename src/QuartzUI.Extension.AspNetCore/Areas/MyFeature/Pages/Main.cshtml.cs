@@ -9,6 +9,7 @@ using QuartzUI.Extension.AspNetCore.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 
 namespace QuartzUI.Extension.AspNetCore.Areas.MyFeature.Pages
 {
@@ -16,10 +17,17 @@ namespace QuartzUI.Extension.AspNetCore.Areas.MyFeature.Pages
     {
         private readonly IQuartzHandle _quartzHandle;
         private readonly IQuartzLogService _logService;
-        public MainModel(IQuartzHandle quartzHandle, IQuartzLogService logService)
+        private readonly bool _isDebug;
+        private readonly string _token;
+        private readonly string _superToken;
+
+        public MainModel(IQuartzHandle quartzHandle, IQuartzLogService logService, IConfiguration configuration)
         {
             _quartzHandle = quartzHandle;
             _logService = logService;
+            _isDebug = Convert.ToBoolean(configuration["QuartzUI:Debug"] ?? "False");
+            _token = configuration["QuartzUI:Token"];
+            _superToken = configuration["QuartzUI:SuperToken"];
         }
 
         [BindProperty]
@@ -92,14 +100,25 @@ namespace QuartzUI.Extension.AspNetCore.Areas.MyFeature.Pages
         /// 获取任务执行记录
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> OnPostJobRecord(string taskName, string groupName, int current, int size)
+        public async Task<IActionResult> OnPostJobRecord(DateTime? startDate, DateTime? endDate, string taskName, string groupName, int current, int size)
         {
-            var data = await _logService.GetLogs(taskName, groupName, current, size);
+            var data = await _logService.GetLogs(startDate, endDate, taskName, groupName, current, size);
+            return new JsonDataResult(data);
+        }
+        /// <summary>
+        /// 删除任务执行记录
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> OnPostDeleteJobRecord(DateTime? startDate, DateTime? endDate, string taskName, string groupName)
+        {
+            var data = await _logService.DeleteLogs(startDate, endDate, taskName, groupName);
             return new JsonDataResult(data);
         }
 
         public IActionResult OnGet()
         {
+            if (_isDebug)
+                HttpContext.Session.SetString("QuartzUIToken", _superToken ?? _token);
             var loginToken = HttpContext.Session.GetString("QuartzUIToken");
             if (string.IsNullOrEmpty(loginToken))
                 return Redirect("/QuartzLogin");
