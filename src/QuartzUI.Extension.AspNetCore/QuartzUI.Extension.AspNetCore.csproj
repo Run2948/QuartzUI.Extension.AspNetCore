@@ -17,10 +17,10 @@
 		<NeutralLanguage>zh-Hans</NeutralLanguage>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<Version>1.1.7</Version>
+		<Version>1.1.8</Version>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<PackageReleaseNotes>Add debug environment; Filter or delete task logs based on date range.</PackageReleaseNotes>
+		<PackageReleaseNotes>Add cron expression real-time translation; Fix closing modal window when clicking background.</PackageReleaseNotes>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 

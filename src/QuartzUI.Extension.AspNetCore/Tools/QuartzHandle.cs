@@ -3,17 +3,13 @@ using QuartzUI.Extension.AspNetCore.Enum;
 using QuartzUI.Extension.AspNetCore.Model;
 using QuartzUI.Extension.AspNetCore.Service;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Quartz;
-using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using Quartz.Impl.Triggers;
 using Quartz.Spi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace QuartzUI.Extension.AspNetCore.Tools
@@ -24,7 +20,7 @@ namespace QuartzUI.Extension.AspNetCore.Tools
         private IQuartzService _quartzService;
         private ISchedulerFactory _schedulerFactory;
         private IQuartzLogService _quartzLogService;
-        private Microsoft.Extensions.Logging.ILogger<QuartzHandle> _logger;
+        private ILogger<QuartzHandle> _logger;
         private IJobFactory _jobFactory;
 
         public QuartzHandle(IQuartzService quartzService, ISchedulerFactory schedulerFactory, IQuartzLogService quartzLogService, IJobFactory jobFactory, ILogger<QuartzHandle> logger)
@@ -314,8 +310,6 @@ namespace QuartzUI.Extension.AspNetCore.Tools
             {
                 try
                 {
-
-
                     IScheduler scheduler = await _schedulerFactory.GetScheduler();
                     List<JobKey> jobKeys = scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(taskOptions.GroupName)).Result.ToList();
                     JobKey jobKey = jobKeys.Where(s => scheduler.GetTriggersOfJob(s).Result.Any(x => (x as CronTriggerImpl).Name == taskOptions.TaskName)).FirstOrDefault();
@@ -330,7 +324,6 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                         job = JobBuilder.Create<ClassLibraryJob>()
                         .WithIdentity(taskOptions.TaskName, taskOptions.GroupName)
                         .Build();
-
                     }
                     else
                     {
@@ -366,7 +359,6 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                 }
                 catch (Exception ex)
                 {
-
                     message += ex.Message;
                 }
             }
@@ -376,9 +368,6 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                 message += isjob.message;
             }
             return new ResultQuartzData { status = isjob.status, message = message };
-
-
-
         }
 
         /// <summary>
@@ -396,7 +385,6 @@ namespace QuartzUI.Extension.AspNetCore.Tools
 
                 if (isjob.status)
                 {
-
                     IScheduler scheduler = await _schedulerFactory.GetScheduler();
                     List<JobKey> jobKeys = scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(taskOptions.GroupName)).Result.ToList();
                     JobKey jobKey = jobKeys.Where(s => scheduler.GetTriggersOfJob(s).Result.Any(x => (x as CronTriggerImpl).Name == taskOptions.TaskName)).FirstOrDefault();
@@ -444,7 +432,6 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                         job = JobBuilder.Create<ClassLibraryJob>()
                         .WithIdentity(taskOptions.TaskName, taskOptions.GroupName)
                         .Build();
-
                     }
                     else
                     {
@@ -508,13 +495,11 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                 {
                     return isjob;
                 }
-
             }
             catch (Exception ex)
             {
                 return new ResultQuartzData { status = false, message = ex.Message };
             }
-
         }
 
         /// <summary>
@@ -558,9 +543,5 @@ namespace QuartzUI.Extension.AspNetCore.Tools
                 return new ResultQuartzData { status = false, message = ex.Message };
             }
         }
-
-
-
-
     }
 }

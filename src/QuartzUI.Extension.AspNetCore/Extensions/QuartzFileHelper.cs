@@ -142,8 +142,8 @@ namespace QuartzUI.Extension.AspNetCore.Tools
 
         public void WriteJobsLog(List<tab_quarz_tasklog> tab_Quarz_Tasklogs, bool appendToLast = true)
         {
-            var lines = tab_Quarz_Tasklogs.Select(x => JsonConvert.SerializeObject(x));
-            var content = string.Join("\r\n", lines) + "\r\n";
+            var lines = tab_Quarz_Tasklogs.Select(x => JsonConvert.SerializeObject(x) + "\r\n");
+            var content = string.Join("", lines);
             WriteFile(LogPath, "logs.txt", content, appendToLast);
         }
 

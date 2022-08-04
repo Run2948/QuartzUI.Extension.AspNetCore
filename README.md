@@ -43,6 +43,7 @@ app.UseQuartz();
 ```json
 {
   "QuartzUI": {
+    "Debug": true,
     "Token": "task123456",
     "SuperToken": "super123456"
   }
@@ -81,6 +82,7 @@ app.UseQuartz();
 ```json
 {
   "QuartzUI": {
+    "Debug": true,
     "Token": "task123456",
     "SuperToken": "super123456"
   }
